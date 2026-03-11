@@ -12,6 +12,7 @@ def query(sql,params=(),fech=True):
     cursor.execute(sql,params or ())
     if fech:
       result=cursor.fetchall()
+      print(result)
       return result
     else:
       db.commit()

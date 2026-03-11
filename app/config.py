@@ -3,8 +3,9 @@ Docstring for app.config:\n
 config file for setting of the app and database .\n
 It make it easy to change the database server or setting of any model of app .
 """
-from app.password import DB_pass
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
 class Config_db:
   '''
   Class for defintion the db setting.
@@ -12,7 +13,8 @@ class Config_db:
   DB_user="root"
   DB_host="localhost"
   DB_name="users"
-  DB_password=DB_pass
+  DB_password=os.getenv("SECRET_KEY_DB")
+  SECRET_KEY=os.getenv("SECRET_KEY")
 
 def get_db_config():
   '''
@@ -28,3 +30,5 @@ def get_db_config():
     "database":Config_db.DB_name,
   }
 
+def get_secret_key():
+  return {"secret":Config_db.SECRET_KEY}

@@ -18,17 +18,6 @@ from app.models.user_model import(
   update_user_info,
   delete_user)
 
-def home_page_logic():
-  return success("This is the home route of user API",{
-    "All routes":{
-    "/users && GET method":"To retrive all the users in our system.",
-    "/note/integer<id> && GET method":"To retrive the user by its id .",
-    "/note/string<email> && GET method":"To retrive the user by its email.",
-    "/note && POST method":"To add one user to the system . ",
-    "/note/integer<id> && PUT method":"To update one user by id.",
-    "/note/interger<id> && DELETE method":"To delete one user by id."
-  }},200 )
-
 def get_users_logic():
   users=get_users()
   if len(users)==0:

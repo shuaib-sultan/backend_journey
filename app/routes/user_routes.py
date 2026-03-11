@@ -5,24 +5,22 @@ get_users_logic,
 get_user_id_logic,
 add_user_logic,
 update_user_logic,
-delete_user_logic,
-home_page_logic)
+delete_user_logic)
 
 user_bp= Blueprint("users",__name__)
 @user_bp.route("/")
 def home ():
-  return home_page_logic()
-
+  return ""
 
 @user_bp.route("/users",methods=["GET"])
 def retrieve_users():
   return get_users_logic()
 
-@user_bp.route("/user/id/<int:id>",methods=["GET"])
+@user_bp.route("/user/<int:id>",methods=["GET"])
 def retrieve_user_id(id):
   return get_user_id_logic(id)
 
-@user_bp.route("/user/email/<string:email>",methods=["GET"])
+@user_bp.route("/user/<string:email>",methods=["GET"])
 def retrieve_user_email(email):
   return get_user_email_logic(email)
 

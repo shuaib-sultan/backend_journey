@@ -3,15 +3,10 @@
 This project is a **User Management API** built with **Flask** and **MySQL**.  
 The main purpose of this repository is to represent my **backend development journey**, starting from a clean and structured CRUD API and evolving into more advanced versions.
 
-Future releases will include:
-- JWT Authentication  
-- Password Hashing  
-- Middleware System  
-- Logging System  
-- Rate Limiting  
-- Connection Pooling  
-- Application Structure Improvements  
-- Docker Support  
+### Project Evolution
+
+- v1.0 → Basic API
+- v1.1 → JWT Authentication
 
 ---
 
@@ -50,6 +45,14 @@ The API validates:
 - Password length  
 - JSON body structure  
 
+### ✔ JWT Authentication  
+In this version I create the JWT (Json Web Token) and return it to the user by login function
+> It's just my first try to understand the main consept of JWT .
+
+### ✔  Save password in safe way  
+I delet the password file in app folder couse i put all my passwords in safest way.
+I put it in environment variables in the file .env
+
 ---
 
 ## 📁 Project Structure
@@ -63,19 +66,20 @@ project/
 |  │ └── user_model.py
 |  │
 |  ├── routes/
-| │ └── user_routes.py
+|  │ └── auth_routes.py
+|  │ └── user_routes.py
 |  │
 |  ├── services/
+|  │ └── auth_service.py
 |  │ └── user_service.py
 |  │
 |  ├── utils/
 |  │ ├── response.py
 |  │ ├── validators.py
-|  │ └── init.py
 |  │
+|  │── init.py
 |  ├── config.py
 |  ├── database.py
-|  └── password.py ← (Not included in repository)
 |──run.py
 
 
@@ -114,11 +118,12 @@ app/config.py
 ```
 For safety, the file:
 ```bash
-app/password.py
+.env
 ``` 
 >is ignored and **NOT nincluded** in the repository because it contains your database password.
 ---
 ## 🧩 API Endpoints
+1. ## user_blueprint
 ### GET /users
 
 Retrieve all users.
@@ -143,13 +148,18 @@ Update user.
 
 Delete user.
 
+2. ## authration_blueprint
+## POST /login
+
+To log in the system and return to the user the token .
+
 ---
 
 ## 📦 Future Versions
 
 ### This project will evolve into multiple advanced releases, including:
 
-- Token-based authentication (JWT)
+- Token-based authentication (JWT) --> done ✔
 
 - Password hashing
 
