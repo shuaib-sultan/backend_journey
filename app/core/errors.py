@@ -10,23 +10,27 @@ class AppError(Exception):
     self.payload=payload
 
 class NotFoundError(AppError):#when the some thing not found 
-  def __init__(self,message="Resource not found.", payload=None):
-    super().__init__(message, 404, payload)
+  def __init__(self,message="Resource not found.", status_code=404,payload=None):
+    super().__init__(message, status_code, payload)
 
 class ValidationError(AppError):# when the data from user is wrong.
-  def __init__(self, message="Validition faild.", payload=None):
-    super().__init__(message,400, payload)
+  def __init__(self, message="Validition faild.", status_code=400,payload=None):
+    super().__init__(message,status_code, payload)
 
 class AuthenticationError(AppError):
-    def __init__(self, message="Authentication failed", payload=None):
-        super().__init__(message, 401, payload)
+    def __init__(self, message="Authentication failed",status_code=401, payload=None):
+        super().__init__(message, status_code, payload)
 
 
 class PermissionError(AppError):
-    def __init__(self, message="Permission denied", payload=None):
-        super().__init__(message, 403, payload)
+    def __init__(self, message="Permission denied",status_code=403 ,payload=None):
+        super().__init__(message, status_code, payload)
 
 
 class DatabaseError(AppError):# for sql error
-    def __init__(self, message="Database error", payload=None):
-        super().__init__(message, 500, payload)
+    def __init__(self, message="Database error",status_code=500, payload=None):
+        super().__init__(message, status_code, payload)
+
+class TooManyRequestsError(AppError):
+    def __init__(self, message="TooManyRequests eroor",status_code=500, payload=None):
+       super().__init__(message,status_code, payload)

@@ -8,6 +8,7 @@ The main purpose of this repository is to represent my **backend development jou
 - v1.0 → Basic API
 - v1.1 → JWT Authentication
 - v1.2 → Middleware Authentication (By Decorators)
+- v1.3 → Password hashing
 
 ---
 
@@ -52,9 +53,18 @@ The API validates:
 - I implemented a middleware decorator for authentication that checks whether the JWT in the request is valid or not. I also use it to verify the admin role of the request.
 
 > I improved the authentication concept in my project and added middleware for better security.
-### ✔  Save password in safe way  
+
+### ✔ Save password in safe way  
 I delet the password file in app folder couse i put all my passwords in safest way.
 I put it in environment variables in the file .env
+
+### ✔ Password hashing  
+- I used the bcrypt module to save the users passwords in database in a safe way by 
+hashing it . 
+- The cod of hashing password and verifeing it in
+```bash
+utils/hash.py
+```
 
 ---
 
@@ -126,6 +136,7 @@ For safety, the file:
 >is ignored and **NOT nincluded** in the repository because it contains your database password.
 
 ---
+
 ## 🧩 API Endpoints
 1. ## user_blueprint
 ### GET /users
@@ -183,6 +194,7 @@ To signup in the the system and return a valid token to the user.
 …and more.
 
 ---
+
 ## 📄 License
 
 >This project is part of my backend training path and is open for learning & improvement.

@@ -20,17 +20,17 @@ def home ():
 def retrieve_users():
   return get_users_logic()
 
-@user_bp.route("/user/<int:id>",methods=["GET"])
+@user_bp.route("/user/byint/<int:id>",methods=["GET"])
 @require_auth
 def retrieve_user_id(id):
   return get_user_id_logic(id)
 
-@user_bp.route("/user/<string:email>",methods=["GET"])
+@user_bp.route("/user/byemail/<string:email>",methods=["GET"])
 @require_auth
 def retrieve_user_email(email):
   return get_user_email_logic(email)
 
-@user_bp.route("/user/",methods=["POST"])
+@user_bp.route("/user/add",methods=["POST"])
 @require_auth
 @auth_admin
 def creat_user():

@@ -48,4 +48,4 @@ def check_empty(*values,message="Empty field is not allowed"):
   for value in values:
     if not value.strip():
       raise ValidationError(message)
-    return True
+  return True

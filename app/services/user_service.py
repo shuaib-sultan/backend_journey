@@ -1,8 +1,8 @@
 from app.utils.response import success
+from flask import g
 from app.core.errors import (
   NotFoundError,
-  ValidationError,
-  DatabaseError
+  ValidationError
 )
 from app.utils.validators import (
   check_syntax,
@@ -18,6 +18,7 @@ from app.models.user_model import(
   update_user_info,
   delete_user,
   update_to_admin)
+from app.utils.hash import hash_password
 
 def get_users_logic():
   users=get_users()
@@ -35,7 +36,7 @@ def get_user_email_logic(email):
   check_email(email)
   result=get_user_by_email(email)
   if not result:
-    raise NotFoundError("The email is not found .",[])
+    raise NotFoundError("Email is not found.",[])
   return success(f"User with email '{email}' retrieved successfully",result)
 
 def add_user_logic(user_data):
@@ -50,6 +51,8 @@ def add_user_logic(user_data):
   check_user=get_user_by_email(email)
   if check_user:
     raise ValidationError("The email is already exists",payload=check_user)
+  hash_pass=hash_password(passw)
+  user_data['password']=hash_pass
   user_id=add_uesr(user_data)
   new_user=get_user_by_id(user_id)
   return success(f"The user crated successfully ",new_user,201)
@@ -66,6 +69,8 @@ def update_user_logic(id,user_data):
   check_type(name,email,passw)
   check_password(passw)
   check_email(email)
+  hash_pass=hash_password(passw)
+  user_data['password']=hash_pass
   update_user_info(id,user_data)
   upadated_user=get_user_by_id(id)
   return success(f"The user with id {id} is uapdated successfully.",upadated_user,201)
@@ -84,4 +89,4 @@ def update_to_admin_logic(id):
   if user[0]["role"]=="admin":
     raise ValidationError(f"The user with id {id} is already admin .")
   new_admin=update_to_admin(id)
-  return success("The user with id {id} he/she is admin now.")
+  return success(f"The user with id {id} he/she is admin now.")

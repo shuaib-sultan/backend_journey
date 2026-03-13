@@ -10,7 +10,7 @@ def register_error_handlers(app):
     return error(e.message,e.payload,e.status_code)
   @app.errorhandler(404)
   def not_found(e):
-    return error("Rout not found .",status=404)
+    return error("Route not found .",status=404)
   @app.errorhandler(405)
   def method_not_allowed(e):
     return error("This methods not allwod",status=405)

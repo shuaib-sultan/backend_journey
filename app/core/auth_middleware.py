@@ -21,23 +21,23 @@ def get_token_from_header():
 def decode_the_token(token):
   secret=get_secret_key()["secret"]
   if not secret:
-    raise AuthenticationError("Server misconfiguration: SECRET_KEY is missing.", None)
+    raise AuthenticationError("Server misconfiguration: SECRET_KEY is missing.",500, None)
   try:
     payload = jwt.decode(token, secret, algorithms=["HS256"])
     return payload
   except ExpiredSignatureError:
-        raise AuthenticationError("Token has expired.", None)
+        raise AuthenticationError("Token has expired.",404, None)
   except InvalidTokenError:
-        raise AuthenticationError("Invalid token.", None)
+        raise AuthenticationError("Invalid token.",404, None)
   except Exception:
-        raise AuthenticationError("Failed to decode token.", None)
+        raise AuthenticationError("Failed to decode token.",404, None)
 
 def require_auth(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         token = get_token_from_header()
         if not token:
-            raise AuthenticationError("Authorization header with Bearer token required.", None)
+            raise AuthenticationError("Authorization header with Bearer token required.",404, None)
         payload = decode_the_token(token)
         g.current_user_payload = payload
         g.current_user_id = payload.get("user_id") or payload.get("sub")
@@ -51,3 +51,4 @@ def auth_admin(fun):
             raise AuthenticationError("Admin privileges required.")
         return fun(*arg,**karg)
     return warper
+
