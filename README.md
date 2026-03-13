@@ -7,6 +7,7 @@ The main purpose of this repository is to represent my **backend development jou
 
 - v1.0 → Basic API
 - v1.1 → JWT Authentication
+- v1.2 → Middleware Authentication (By Decorators)
 
 ---
 
@@ -45,10 +46,12 @@ The API validates:
 - Password length  
 - JSON body structure  
 
-### ✔ JWT Authentication  
-In this version I create the JWT (Json Web Token) and return it to the user by login function
-> It's just my first try to understand the main consept of JWT .
+### ✔ JWT Authentication
 
+- In this version I created a JWT (JSON Web Token) and return it to the user through the login or signup functions.
+- I implemented a middleware decorator for authentication that checks whether the JWT in the request is valid or not. I also use it to verify the admin role of the request.
+
+> I improved the authentication concept in my project and added middleware for better security.
 ### ✔  Save password in safe way  
 I delet the password file in app folder couse i put all my passwords in safest way.
 I put it in environment variables in the file .env
@@ -121,6 +124,7 @@ For safety, the file:
 .env
 ``` 
 >is ignored and **NOT nincluded** in the repository because it contains your database password.
+
 ---
 ## 🧩 API Endpoints
 1. ## user_blueprint
@@ -151,7 +155,10 @@ Delete user.
 2. ## authration_blueprint
 ## POST /login
 
-To log in the system and return to the user the token .
+To login in the system and return to the user the token .
+
+## POST /signup
+To signup in the the system and return a valid token to the user.
 
 ---
 
@@ -161,6 +168,8 @@ To log in the system and return to the user the token .
 
 - Token-based authentication (JWT) --> done ✔
 
+- Middleware engine --> done ✔
+
 - Password hashing
 
 - Role-based authorization
@@ -169,7 +178,6 @@ To log in the system and return to the user the token .
 
 - Rate limiting
 
-- Middleware engine
 
 - Docker containerization
 …and more.

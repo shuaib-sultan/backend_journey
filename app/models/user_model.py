@@ -32,3 +32,8 @@ def delete_user(id):
   sql="delete from user_info where id =%s;"
   result=query(sql,(id,),False)
   return result
+
+def update_to_admin(id):
+  sql="update user_info set role = 'admin' where id = %s ;"
+  result=query(sql,(id,))
+  return result

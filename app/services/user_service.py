@@ -16,7 +16,8 @@ from app.models.user_model import(
   get_users,
   add_uesr,
   update_user_info,
-  delete_user)
+  delete_user,
+  update_to_admin)
 
 def get_users_logic():
   users=get_users()
@@ -75,3 +76,12 @@ def delete_user_logic(id):
     raise NotFoundError(f"The user with id {id} not found.")
   delete_user(id)
   return success(f"The user wiht id {id} deleted successfully.",check_user,200)
+
+def update_to_admin_logic(id):
+  user=get_user_by_id(id)
+  if not user:
+    raise NotFoundError(f'The id {id} not found .')
+  if user[0]["role"]=="admin":
+    raise ValidationError(f"The user with id {id} is already admin .")
+  new_admin=update_to_admin(id)
+  return success("The user with id {id} he/she is admin now.")
