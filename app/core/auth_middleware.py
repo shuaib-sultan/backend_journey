@@ -2,6 +2,7 @@ from functools import wraps
 from flask import g,request
 from app.config import get_secret_key
 from app.core.errors import AuthenticationError
+from flask import current_app
 import jwt
 from jwt import InvalidTokenError,ExpiredSignatureError
 
@@ -38,9 +39,11 @@ def require_auth(func):
         token = get_token_from_header()
         if not token:
             raise AuthenticationError("Authorization header with Bearer token required.",404, None)
+        current_app.logger.info(f"Attempting to decode token for path: {request.path}")
         payload = decode_the_token(token)
         g.current_user_payload = payload
         g.current_user_id = payload.get("user_id") or payload.get("sub")
+        current_app.logger.info(f"The token is accepted to user with id {g.current_user_id}")
         return func(*args, **kwargs)
     return wrapper
 

@@ -11,3 +11,4 @@ def verify_password(plain_password, hashed_password):
         plain_password.encode("utf-8"), # encude cuse we get the password as string and we need to convert it to bytes
         hashed_password.encode("utf-8")
     )
+

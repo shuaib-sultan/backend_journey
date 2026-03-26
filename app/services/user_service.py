@@ -1,5 +1,5 @@
 from app.utils.response import success
-from flask import g
+from flask import current_app ,g
 from app.core.errors import (
   NotFoundError,
   ValidationError
@@ -54,6 +54,7 @@ def add_user_logic(user_data):
   hash_pass=hash_password(passw)
   user_data['password']=hash_pass
   user_id=add_uesr(user_data)
+  current_app.logger.info(f"The user with id{g.current_user_id} add the user with id {user_id} successfully to the sysetm . ")
   new_user=get_user_by_id(user_id)
   return success(f"The user crated successfully ",new_user,201)
 
@@ -72,6 +73,7 @@ def update_user_logic(id,user_data):
   hash_pass=hash_password(passw)
   user_data['password']=hash_pass
   update_user_info(id,user_data)
+  current_app.logger.info(f'The user with id {g.current_user_id } update the user {id} successfully .')
   upadated_user=get_user_by_id(id)
   return success(f"The user with id {id} is uapdated successfully.",upadated_user,201)
 
@@ -80,6 +82,7 @@ def delete_user_logic(id):
   if not check_user:
     raise NotFoundError(f"The user with id {id} not found.")
   delete_user(id)
+  current_app.logger.info(f'The user with id{g.current_user_id } delet the user {id} deleted successfully .')
   return success(f"The user wiht id {id} deleted successfully.",check_user,200)
 
 def update_to_admin_logic(id):
@@ -89,4 +92,5 @@ def update_to_admin_logic(id):
   if user[0]["role"]=="admin":
     raise ValidationError(f"The user with id {id} is already admin .")
   new_admin=update_to_admin(id)
+  current_app.logger.info(f'The user with id {id} upgrade to admin successfully .')
   return success(f"The user with id {id} he/she is admin now.")

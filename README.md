@@ -9,7 +9,7 @@ The main purpose of this repository is to represent my **backend development jou
 - v1.1 → JWT Authentication
 - v1.2 → Middleware Authentication (By Decorators)
 - v1.3 → Password hashing
-
+- v2.0 → Logging system
 ---
 
 ## 📌 Features (Current Version)
@@ -65,6 +65,10 @@ hashing it .
 ```bash
 utils/hash.py
 ```
+## ✔ Logging system  
+- I added to my API project a logging system to monitor my project form loginig and signing in . it save every error and important information in a files inside the log folder .
+
+- I added alse a request logger to montior every request and respond  by useing the request hooks [after_request _ before_request] .
 
 ---
 
@@ -72,8 +76,11 @@ utils/hash.py
 project/
 |──app/
 |  ├── core/
+|  │ ├── auth_middleware.py  (it's from v1.2)
 |  │ ├── error_handler.py
 |  │ └── errors.py
+|  │ ├── logger.py
+|  │ ├── request_logger.py
 |  │
 |  ├── models/
 |  │ └── user_model.py
@@ -89,11 +96,16 @@ project/
 |  ├── utils/
 |  │ ├── response.py
 |  │ ├── validators.py
+|  │ ├── hash.py (it's from v1.3)
 |  │
 |  │── init.py
 |  ├── config.py
 |  ├── database.py
+|──logs/
+|  ├── app.log
+|──.env
 |──run.py
+
 
 
 ---
@@ -181,16 +193,20 @@ To signup in the the system and return a valid token to the user.
 
 - Middleware engine --> done ✔
 
-- Password hashing
+- Password hashing --> done ✔
+
+- Logging system --> done ✔
+
+- Pagination
+
+- Filtering
 
 - Role-based authorization
 
-- Logging system
-
 - Rate limiting
 
-
 - Docker containerization
+
 …and more.
 
 ---

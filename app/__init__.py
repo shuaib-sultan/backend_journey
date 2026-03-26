@@ -5,6 +5,10 @@ def create_app():
   app.register_blueprint(user_bp)
   from app.routes.auth_routes import auth_bp
   app.register_blueprint(auth_bp)
+  from app.core.logger import setup_logger
+  app.logger=setup_logger()
   from app.core.error_handler import register_error_handlers
   register_error_handlers(app)
+  from app.core.request_logger import register_request_logger
+  register_request_logger(app)
   return app
