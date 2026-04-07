@@ -12,7 +12,7 @@ def register_request_logger(app):
     def log_response(response):
         duration = round((time.time() - g.start_time) * 1000, 2)
         current_app.logger.info(
-            f"[RESPONSE] {request.method} {request.path}| User: some bich:O "
+            f"[RESPONSE] {request.method} {request.path}| User: {g.current_user_id} "
             f"| Status: {response.status_code} "
             f"| Time: {duration}ms "
         )

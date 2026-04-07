@@ -10,7 +10,8 @@ The main purpose of this repository is to represent my **backend development jou
 - v1.2 → Middleware Authentication (By Decorators)
 - v1.3 → Password hashing
 - v2.0 → Logging system
-- v2.1 → Pagination  
+- v2.1 → Pagination
+- v2.2 → Filtering
 ---
 
 ## 📌 Features (Current Version)
@@ -152,9 +153,10 @@ For safety, the file:
 
 ## 🧩 API Endpoints
 1. ## user_blueprint
-### GET /users ? page = x & limit = y
+### GET /users ? page = x & limit = y & role = z
 
-Retrieve all users in the page x by limit y . by defult page = 1 limit = 10 users in one page .
+Retrieve all users in the page x by limit y and filter the result by role ["admin" or "user"].
+Defult (/users) page = 1 limit = 10 users in one page .
 
 
 ### GET /user/id/<id>
@@ -205,7 +207,7 @@ To signup in the the system and return a valid token to the user.
 
 - Pagination --> done ✔
 
-- Filtering
+- Filtering  --> done ✔
 
 - Role-based authorization
 

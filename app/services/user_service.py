@@ -21,16 +21,19 @@ from app.models.user_model import(
   get_all)
 from app.utils.hash import hash_password
 
-def get_users_logic(page,limit):
+def get_users_logic(page,limit,filters,params):
   try:
     page=int(page);limit=int(limit)
   except ValueError:
-    raise ValidationError("Invalid type of argument : [page,limit] should be integer numbers")
+    raise ValidationError("Invalid type of parameters : [page,limit] should be integer numbers.")
+  if filters and params :
+    if not isinstance(params[0],str):
+      raise ValidationError("Invalid type of parmaeters : [role] shold be string. ")
   if (limit>100 or (page < 1 or limit < 0)):
     raise ValidationError("Invalid argumentes page[1->100000] limit [10->100]")
-  offset=(page-1)*limit
-  users=get_users(limit,offset=offset)
-  total_users = get_all()[0]["count(user_name)"]
+  offset=(page-1)*limit 
+  users=get_users(limit,offset,filters,params)
+  total_users = get_all()[0]["total"]
   total_pages = total_users / limit
   has_next_page = page < total_pages
   if not users:
