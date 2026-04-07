@@ -12,7 +12,6 @@ def login_logic(user_data):
   email=user_data.get("user_email")
   password=user_data.get("password")
   check_empty(email,password,"Email and password are required.")
-  check_password(password)
   user=get_user_by_email(email)
   if not user:
     raise ValidationError("Emial is not valid you should signup ")
@@ -32,16 +31,16 @@ def login_logic(user_data):
   return success("Logedin successfully.",{"token":token})
 
 def sign_up_logic(user_data):
-  check_type(user_data["user_name"],user_data["user_email"],user_data["password"])
   check_syntax(user_data)
+  check_type(user_data["user_name"],user_data["user_email"],user_data["password"])
   check_empty(user_data["user_name"],user_data["user_email"],user_data["password"])
   email=user_data["user_email"]
   check_email(email)
   password=user_data["password"]
-  check_password(password)
   user=get_user_by_email(email)
   if user:
     raise ValidationError("This email is already in the system log in to get your new token .")
+  check_password(password)
   hash_pass=hash_password(password)
   user_data["password"]=hash_pass
   new_user=add_uesr(user_data)

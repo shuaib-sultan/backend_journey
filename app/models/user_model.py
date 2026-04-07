@@ -3,8 +3,13 @@ Docstring for app.models.user_model
 It's file for sql functuin for CRUD actions.
 '''
 from app.database import query
-def get_users():
-  sql="select * from user_info ;"
+def get_users(limit,offset):
+  sql="select * from user_info order by id limit %s offset %s;"
+  result=query(sql,(limit , offset))
+  return result
+
+def get_all():
+  sql="select count(user_name) from user_info "
   result=query(sql)
   return result
 
