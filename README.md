@@ -12,6 +12,7 @@ The main purpose of this repository is to represent my **backend development jou
 - v2.0 → Logging system
 - v2.1 → Pagination
 - v2.2 → Filtering
+- v2.3 → Pool connection 
 ---
 
 ## 📌 Features (Current Version)
@@ -71,6 +72,10 @@ utils/hash.py
 - I added to my API project a logging system to monitor my project form loginig and signing in . it save every error and important information in a files inside the log folder .
 
 - I added alse a request logger to montior every request and respond  by useing the request hooks [after_request _ before_request] .
+
+## ✔ Pool connection 
+
+- I make the connection with the database server in the V2.3 esyer than last versions with pooling connection .
 
 ---
 
@@ -208,6 +213,8 @@ To signup in the the system and return a valid token to the user.
 - Pagination --> done ✔
 
 - Filtering  --> done ✔
+
+- Pool connection --> done ✔
 
 - Role-based authorization
 

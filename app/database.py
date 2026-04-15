@@ -1,12 +1,15 @@
 import mysql.connector
 from app.config import get_db_config
 from app.core.errors import DatabaseError
-def connect_db():
-  db_config=get_db_config()
-  db=mysql.connector.connect(**db_config)
-  return db
+from mysql.connector import pooling
+db_config=get_db_config()
+pool= pooling.MySQLConnectionPool(
+  pool_size=5,
+  pool_name="DB_pool",
+  **db_config
+)
 def query(sql,params=(),fech=True):
-  db=connect_db()
+  db=pool.get_connection()
   cursor=db.cursor(dictionary=True)
   try:
     cursor.execute(sql,params or ())

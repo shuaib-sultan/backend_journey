@@ -26,10 +26,10 @@ def get_users_logic(page,limit,filters,params):
     page=int(page);limit=int(limit)
   except ValueError:
     raise ValidationError("Invalid type of parameters : [page,limit] should be integer numbers.")
-  if filters and params :
+  if filters :
     if not isinstance(params[0],str):
       raise ValidationError("Invalid type of parmaeters : [role] shold be string. ")
-  if (limit>100 or (page < 1 or limit < 0)):
+  if (limit>100 or (page < 1 or limit < 1) ):
     raise ValidationError("Invalid argumentes page[1->100000] limit [10->100]")
   offset=(page-1)*limit 
   users=get_users(limit,offset,filters,params)

@@ -4,10 +4,10 @@ It's file for sql functuin for CRUD actions.
 '''
 from app.database import query
 def get_users(limit,offset,filters,params):
-  sql="select * from user_info "
-  if filters:
-    sql+="where"+ "and".join(filters)
-  sql+="order by id limit %s offset %s;"
+  sql= "select * from user_info "
+  if filters :
+    sql+=" where "+ " and ".join(filters)
+  sql+=" order by id limit %s offset %s;"
   result=query(sql,(*params,limit , offset))
   return result
 

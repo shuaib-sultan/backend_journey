@@ -19,12 +19,12 @@ def home ():
 @user_bp.route("/users",methods=["GET"])
 @require_auth
 def retrieve_users():
-  allowed_args=['role']
+  allowed_args=["role"]
   filters=[]
   params=[]
   for key , value in request.args.items():
     if key in allowed_args:
-      filters.append(key+'=%s')
+      filters.append(key +' = %s ')
       params.append(value)
   pag=request.args.get("page",1)
   limit=request.args.get("limit",10)
