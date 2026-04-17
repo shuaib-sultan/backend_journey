@@ -13,6 +13,7 @@ The main purpose of this repository is to represent my **backend development jou
 - v2.1 → Pagination
 - v2.2 → Filtering
 - v2.3 → Pool connection 
+- v3.0 → Role-Based Authorization (RBAC)
 ---
 
 ## 📌 Features (Current Version)
@@ -77,13 +78,17 @@ utils/hash.py
 
 - I make the connection with the database server in the V2.3 esyer than last versions with pooling connection .
 
+## ✔ Role-Based Authorization (RBAC)
+
+- It's kind of authorization based of the user role  not just on admin i made it in this version more public with  and with premitions 
+
 ---
 
 ## 📁 Project Structure
 project/
 |──app/
 |  ├── core/
-|  │ ├── auth_middleware.py  (it's from v1.2)
+|  │ ├── auth_middleware.py
 |  │ ├── error_handler.py
 |  │ └── errors.py
 |  │ ├── logger.py
@@ -216,9 +221,11 @@ To signup in the the system and return a valid token to the user.
 
 - Pool connection --> done ✔
 
-- Role-based authorization
+- Role-based authorization --> done ✔
 
 - Rate limiting
+
+- Query Optimization
 
 - Docker containerization
 

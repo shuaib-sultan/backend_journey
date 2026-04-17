@@ -1,5 +1,5 @@
-from flask import Blueprint ,request
-from app.core.auth_middleware import require_auth,auth_admin
+from flask import Blueprint , request
+from app.core.auth_middleware import require_auth,role_auth
 from app.services.user_service import( 
 get_user_email_logic,
 get_users_logic,
@@ -42,14 +42,14 @@ def retrieve_user_email(email):
 
 @user_bp.route("/user/add",methods=["POST"])
 @require_auth
-@auth_admin
+@role_auth("admin")
 def creat_user():
   new_user= request.get_json()
   return add_user_logic(new_user)
 
 @user_bp.route("/user/update/<int:id>",methods=["PUT"])
 @require_auth
-@auth_admin
+@role_auth("admin")
 def update_user_by_id(id):
   new_user=request.get_json()
   return update_user_logic_id(id,new_user)
@@ -67,6 +67,6 @@ def remove_user(id):
 
 @user_bp.route("/add/admin/<int:id>",methods=["PUT"])
 @require_auth
-@auth_admin
+@role_auth("admin")
 def add_admin(id):
   return update_to_admin_logic(id)

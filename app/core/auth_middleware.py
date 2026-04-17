@@ -47,11 +47,12 @@ def require_auth(func):
         return func(*args, **kwargs)
     return wrapper
 
-def auth_admin(fun):
+def role_auth(*roles):
+  def dec(fun):
     @wraps(fun)
-    def warper(*arg,**karg):
-        if g.current_user_payload.get("role") != "admin":
-            raise AuthenticationError("Admin privileges required.")
-        return fun(*arg,**karg)
-    return warper
-
+    def wrapper(*args,**kargs):
+      if g.current_payload["role"] not in roles:
+        raise AuthenticationError(f" {roles} privileges required")
+      return fun(*args,**kargs)
+    return wrapper
+  return dec
