@@ -14,6 +14,7 @@ The main purpose of this repository is to represent my **backend development jou
 - v2.2 → Filtering
 - v2.3 → Pool connection 
 - v3.0 → Role-Based Authorization (RBAC)
+- v3.1 → Rate limiting
 ---
 
 ## 📌 Features (Current Version)
@@ -82,6 +83,10 @@ utils/hash.py
 
 - It's kind of authorization based of the user role  not just on admin i made it in this version more public with  and with premitions 
 
+## ✔ Rate limiting
+- It's a limiter of request by ip . that means in 60 second the user can sent 5 request only.
+
+
 ---
 
 ## 📁 Project Structure
@@ -93,6 +98,7 @@ project/
 |  │ └── errors.py
 |  │ ├── logger.py
 |  │ ├── request_logger.py
+|  │ ├── rate_limiting.py
 |  │
 |  ├── models/
 |  │ └── user_model.py
@@ -223,7 +229,7 @@ To signup in the the system and return a valid token to the user.
 
 - Role-based authorization --> done ✔
 
-- Rate limiting
+- Rate limiting --> done ✔
 
 - Query Optimization
 
