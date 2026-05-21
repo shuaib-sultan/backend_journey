@@ -12,9 +12,10 @@ The main purpose of this repository is to represent my **backend development jou
 - v2.0 → Logging system
 - v2.1 → Pagination
 - v2.2 → Filtering
-- v2.3 → Pool connection 
+- v2.3 → Pool connection
 - v3.0 → Role-Based Authorization (RBAC)
 - v3.1 → Rate limiting
+- v3.2 → Query Optimization & Database Indexing
 ---
 
 ## 📌 Features (Current Version)
@@ -86,6 +87,11 @@ utils/hash.py
 ## ✔ Rate limiting
 - It's a limiter of request by ip . that means in 60 second the user can sent 5 request only.
 
+## ✔ Query Optimization
+
+- I optimized some database queries to improve filtering performance.
+- I added indexing on frequently filtered columns like `role`.
+- This version improves query execution efficiency and scalability.
 
 ---
 
@@ -231,7 +237,11 @@ To signup in the the system and return a valid token to the user.
 
 - Rate limiting --> done ✔
 
-- Query Optimization
+- Query Optimization --> done ✔
+
+- Project Refactoring & Structure Improvements
+
+- API Documentation
 
 - Docker containerization
 
