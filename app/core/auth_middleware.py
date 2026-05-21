@@ -1,58 +1,37 @@
+from flask import request ,g,current_app
 from functools import wraps
-from flask import g,request
-from app.config import get_secret_key
-from app.core.errors import AuthenticationError
-from flask import current_app
-import jwt
-from jwt import InvalidTokenError,ExpiredSignatureError
+from app.core.errors import (
+  AuthenticationError,
+  PermissionError)
+from app.utiles.jwt_utiles import (
+  decode_token,
+  extract_token)
 
-def get_token_from_header():
-  headr=request.headers.get("Authorization")
-  if not headr:
-    return None
-  headr=headr.split()
-  if len(headr)!=2:
-    return None
-  schema=headr[0]
-  token=headr[1]
-  if schema.lower() !="bearer":
-    return None
-  return token
+def auth_required(fun):
+  @wraps(fun)
+  def wrapper(*args,**kargs):
+    header=request.headers.get("Authorization")
+    token=extract_token(header)
+    if not token :
+      current_app.logger.warning("Unauthorized access attempt")
+      raise AuthenticationError("Token is missing")
+    payload=decode_token(token)
+    if not payload or "id" not in payload or "role_id" not in payload: 
+      raise AuthenticationError("Invalid token payload")
+    g.user_id=payload["id"]
+    g.user_payload=payload
+    return fun(*args,**kargs)
+  return wrapper
 
-def decode_the_token(token):
-  secret=get_secret_key()["secret"]
-  if not secret:
-    raise AuthenticationError("Server misconfiguration: SECRET_KEY is missing.",500, None)
-  try:
-    payload = jwt.decode(token, secret, algorithms=["HS256"])
-    return payload
-  except ExpiredSignatureError:
-        raise AuthenticationError("Token has expired.",404, None)
-  except InvalidTokenError:
-        raise AuthenticationError("Invalid token.",404, None)
-  except Exception:
-        raise AuthenticationError("Failed to decode token.",404, None)
-
-def require_auth(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        token = get_token_from_header()
-        if not token:
-            raise AuthenticationError("Authorization header with Bearer token required.",404, None)
-        current_app.logger.info(f"Attempting to decode token for path: {request.path}")
-        payload = decode_the_token(token)
-        g.current_user_payload = payload
-        g.current_user_id = payload.get("user_id") or payload.get("sub")
-        current_app.logger.info(f"The token is accepted to user with id {g.current_user_id}")
-        return func(*args, **kwargs)
-    return wrapper
-
-def role_auth(*roles):
+def role_required(*roles):
   def dec(fun):
     @wraps(fun)
     def wrapper(*args,**kargs):
-      if g.current_payload["role"] not in roles:
-        raise AuthenticationError(f" {roles} privileges required")
+      if not hasattr(g, "user_payload"):
+        raise AuthenticationError("Authentication required")
+      if g.user_payload["role_id"] not in roles:
+        current_app.logger.warning(f"Access denied for user {g.user_id} due to insufficient role")
+        raise PermissionError(f"{roles} privileges required")
       return fun(*args,**kargs)
     return wrapper
   return dec

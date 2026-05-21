@@ -16,6 +16,7 @@ The main purpose of this repository is to represent my **backend development jou
 - v3.0 → Role-Based Authorization (RBAC)
 - v3.1 → Rate limiting
 - v3.2 → Query Optimization & Database Indexing
+- v3.3 → Project Refactoring & Structure Improvements
 ---
 
 ## 📌 Features (Current Version)
@@ -93,34 +94,40 @@ utils/hash.py
 - I added indexing on frequently filtered columns like `role`.
 - This version improves query execution efficiency and scalability.
 
+## ✔ Refactoring & Structure Improvements
+
+- I refactored multiple parts of the project to improve readability and maintainability.
+- I reorganized the project structure to make the codebase cleaner and easier to scale.
+- I improved separation of concerns between layers.
 ---
 
 ## 📁 Project Structure
 project/
 |──app/
 |  ├── core/
-|  │ ├── auth_middleware.py
+|  │ ├── auth_middelware.py
 |  │ ├── error_handler.py
 |  │ └── errors.py
-|  │ ├── logger.py
-|  │ ├── request_logger.py
-|  │ ├── rate_limiting.py
+|  │ ├── logger_system.py
+|  │ ├── logger_request.py
+|  │ ├── rate_limit.py
 |  │
 |  ├── models/
-|  │ └── user_model.py
+|  │ └── user_sql.py
 |  │
 |  ├── routes/
-|  │ └── auth_routes.py
-|  │ └── user_routes.py
+|  │ └── auth_blueprint.py
+|  │ └── user_blueprint.py
 |  │
 |  ├── services/
 |  │ └── auth_service.py
-|  │ └── user_service.py
+|  │ └── user_serice.py
 |  │
-|  ├── utils/
+|  ├── utiles/
+|  │ ├── jwt_utiles.py
 |  │ ├── response.py
-|  │ ├── validators.py
-|  │ ├── hash.py (it's from v1.3)
+|  │ ├── validatores.py
+|  │ ├── pass_hashing.py
 |  │
 |  │── init.py
 |  ├── config.py
@@ -213,6 +220,9 @@ To login in the system and return to the user the token .
 ## POST /signup
 To signup in the the system and return a valid token to the user.
 
+## POST /logout
+To logout of the system and invoke the token .
+
 ---
 
 ## 📦 Future Versions
@@ -239,7 +249,7 @@ To signup in the the system and return a valid token to the user.
 
 - Query Optimization --> done ✔
 
-- Project Refactoring & Structure Improvements
+- Project Refactoring & Structure Improvements --> done ✔
 
 - API Documentation
 

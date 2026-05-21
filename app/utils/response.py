@@ -1,14 +1,15 @@
 from flask import jsonify
-def success(message,data=None,status=200):
+
+def success(message,status_code,payload=None):
   return jsonify({
       "status":"Success",
       "success_message":message,
-      "details":data if data is not None else []
-    }),status
+      "details":payload if payload is not None else []
+    }),status_code
 
-def error(message,data=None,status=400):
+def error(message,status_code,payload=None):
   return jsonify({
       "status":"Error",
       "error_message":message,
-      "details":data if data is not None else []
-    }),status
+      "details": payload if payload is not None else []
+    }),status_code

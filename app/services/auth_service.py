@@ -1,56 +1,72 @@
-import jwt
-from datetime import datetime,timezone,timedelta
-from flask import current_app
-from app.utils.validators import (check_email,check_empty,check_password,check_type,check_syntax)
-from app.models.user_model import(get_user_by_email,get_user_by_id,add_uesr)
-from app.core.errors import ValidationError
-from app.utils.response import success
-from app.config import get_secret_key
-from app.utils.hash import verify_password,hash_password
+from app.core.errors import (
+  AuthenticationError,
+  ConflictError
+  )
+from app.utiles.validatores import (
+  check_email,
+  check_empty_field,
+  check_pass,
+  check_synatx,
+  check_type,
+  empty_request,
+)
+from app.utiles.jwt_utiles import ( 
+  generate_jwt,
+  )
+from app.models.user_sql import (
+  get_user_by_email,
+  add_user,
+)
+from app.utiles.response import success
+from flask import g,current_app
+from app.utiles.pass_hashing import hashing,vreify_password
 
-def login_logic(user_data):
-  email=user_data.get("user_email")
-  password=user_data.get("password")
-  check_empty(email,password,"Email and password are required.")
-  user=get_user_by_email(email)
-  if not user:
-    raise ValidationError("Emial is not valid you should signup ")
-  plain_pass=password
-  hash_pass=user[0]["password"]
-  if not verify_password(plain_pass,hash_pass):
-    raise ValidationError("Wrong password")
-  current_app.logger.info(f"The user {user[0]["user_name"]} with id {user[0]["id"]} loged in .")
-  payload={
-    "user_id":user[0]["id"],
-    "role":user[0]["role"],
-    "exp": datetime.now(timezone.utc) + timedelta(minutes=30)
-}
-  SECRET_KEY=get_secret_key()["secret"]
-  token = jwt.encode(payload,SECRET_KEY,algorithm="HS256")
-  current_app.logger.info(f"The user {user[0]["id"]} take his token successfully")
-  return success("Logedin successfully.",{"token":token})
+def login_logic(data):
+  empty_request(data)
+  check_empty_field(data)
+  check_synatx(data,["user_email","password"])
+  user_name=data["user_name"]
+  check_type(user_name)
+  user_email=data["user_email"]
+  check_type(user_email)
+  user_pass=data["password"]
+  check_type(user_pass)
+  user=get_user_by_email(user_email)
+  if not user or not vreify_password(user_pass,user[0]["password"]) :
+    raise AuthenticationError("Invalid email or password . ")
+  user_role=user[0]["role_id"]
+  token=generate_jwt(user[0]["id"],user_role)
+  current_app.logger.info(f"The user of id {user[0]["id"]} loged in successfully and take his new valid token." )
+  return success("you loged in successfully.",200,{"new_token":token})
 
-def sign_up_logic(user_data):
-  check_syntax(user_data)
-  check_type(user_data["user_name"],user_data["user_email"],user_data["password"])
-  check_empty(user_data["user_name"],user_data["user_email"],user_data["password"])
-  email=user_data["user_email"]
-  check_email(email)
-  password=user_data["password"]
-  user=get_user_by_email(email)
+def signin_logic(data):
+  empty_request(data)
+  check_empty_field(data)
+  check_synatx(data,["user_name","user_email","password"])
+  user_name=data["user_name"]
+  check_type(user_name)
+  user_email=data["user_email"]
+  user=get_user_by_email(user_email)
+  check_type(user_email)
+  check_email(user_email)
   if user:
-    raise ValidationError("This email is already in the system log in to get your new token .")
-  check_password(password)
-  hash_pass=hash_password(password)
-  user_data["password"]=hash_pass
-  new_user=add_uesr(user_data)
-  current_app.logger.info(f"The user with id {new_user} sing in sucessfully")
-  payload={
-    "user_id":new_user,
-    "role":"user",
-    "exp": datetime.now(timezone.utc) + timedelta(minutes=30)
-  }
-  SECRET_KEY=get_secret_key()["secret"]
-  token = jwt.encode(payload,SECRET_KEY,algorithm="HS256")
-  current_app.logger.info(f"The user with id {new_user} take his token successfully.")
-  return success("signed in successflly.",{"user_id":new_user,"token":token})
+    raise ConflictError("The email already in the system . try to login .")
+  user_pass=data["password"]
+  check_type(user_pass)
+  check_pass(user_pass)
+  user_pass=hashing(user_pass)
+  user=add_user(user_name,user_email,user_pass)
+  token=generate_jwt(user[0]["id"],2)
+  current_app.logger.info(f"The user of id {user} signup successfully and take his new valid token.")
+  return success("you signup successfully.",200,{"new_token":token})
+
+black_token_list=[]
+
+def logout_logic():
+  payload= getattr(g,"user_payload")
+  if payload["jti"] in black_token_list :
+    current_app.logger.warning(f"The user of id {g.user_id} try to logout with invoked token .")
+    raise AuthenticationError("The session already exprisson .")
+  black_token_list.append(payload["jti"])
+  current_app.logger.info(f"The user of id {g.user_id} logedout of the system .")
+  return success("you logedout successfully .",200)

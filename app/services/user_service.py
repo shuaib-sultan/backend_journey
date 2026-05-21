@@ -1,129 +1,137 @@
 from app.utils.response import success
-from flask import current_app ,g
+from flask import g,current_app
 from app.core.errors import (
+  ValidationError,
   NotFoundError,
-  ValidationError
+  ConflictError
+)
+from app.models.user_sql import (
+  get_user,
+  get_user_by_email,
+  get_users,
+  count_users,
+  add_user,
+  update_to_admin,
+  update_user,
+  delet_user,
 )
 from app.utils.validators import (
-  check_syntax,
   check_email,
-  check_empty,
+  check_empty_field,
+  check_pass,
+  check_synatx,
   check_type,
-  check_password)
-from app.models.user_model import(
-  get_user_by_email,
-  get_user_by_id,
-  get_users,
-  add_uesr,
-  update_user_info,
-  delete_user,
-  update_to_admin,
-  get_all)
-from app.utils.hash import hash_password
+  empty_request)
 
 def get_users_logic(page,limit,filters,params):
-  try:
-    page=int(page);limit=int(limit)
-  except ValueError:
-    raise ValidationError("Invalid type of parameters : [page,limit] should be integer numbers.")
+  if not isinstance(page,int):
+    raise ValidationError("The page parameters muste be a number.")
+  if not isinstance(limit,int):
+    raise ValidationError("The limit of users parameters muste be a number.")
+  if limit < 5 :
+    raise ValidationError("Invaild number of limit [ limit >= 5 ].")
+  if page < 1:
+    raise ValidationError("Invalid number of page [ page >= 1 ].")
   if filters :
-    if not isinstance(params[0],str):
-      raise ValidationError("Invalid type of parmaeters : [role] shold be string. ")
-  if (limit>100 or (page < 1 or limit < 1) ):
-    raise ValidationError("Invalid argumentes page[1->100000] limit [10->100]")
-  offset=(page-1)*limit 
+    for param in params :
+      if not isinstance(param,str):
+        raise ValidationError("The parameters of filters must be string .")
+  offset=(page-1)*limit
+  total_users= count_users()[0]["total"]
+  from math import ceil
+  total_pages= ceil(total_users/limit)
   users=get_users(limit,offset,filters,params)
-  total_users = get_all()[0]["total"]
-  total_pages = total_users / limit
-  has_next_page = page < total_pages
-  if not users:
-    return success("No users found for this page.",{"page":page,"limit":limit,"total_pages":total_pages,"total_users":total_users,"has_next_page":has_next_page,"data":users},200)
-  return success("Users retrieved successfuly .",{"page":page,"limit":limit,"total_pages":total_pages,"total_users":total_users,"has_next_page":has_next_page,"data":users},200)
+  current_app.logger.info("The user ritrive the users successfully.")
+  return success("The users retrive successfully.",200,{
+    "page":page,
+    "limit":limit,
+    "total_pages":total_pages,
+    "total_users":total_users,
+    "data":users
+  })
 
-def get_user_id_logic(id):
-  user= get_user_by_id(id)
+def add_user_logic(data):
+  empty_request(data)
+  check_empty_field(data)
+  check_synatx(data,["user_name","user_email","password"])
+  user_name=data["user_name"]
+  check_type(user_name)
+  user_email=data["user_email"]
+  check_type(user_email)
+  check_email(user_email)
+  user_pass=data["password"]
+  check_type(user_pass)
+  if get_user_by_email(user_email):
+    raise ConflictError("The user already on the system .")
+  check_pass(user_pass)
+  new_user_id=add_user(user_name,user_email,user_pass)
+  current_app.logger.info(f"The adimn of id {g.user_id} add user of id {new_user_id} to the system successfully .")
+  return success("The user added successfully .",201,{'new_user_id':new_user_id})
+
+def delet_user_logic(id):
+  user=get_user(id)
   if not user:
-    raise NotFoundError(f'The id {id} not found .')
-  return success(f"User with ID {id} retrieved successfully",{"data":user},200)
+    raise NotFoundError(f"The user with id {id} is not found .")
+  delet_user(id)
+  current_app.logger.info(f"The admin of id {g.user_id} delete the user of id {id} successfully.")
+  return success (f"The user of id {id} deleted successfully.",200)
 
-def get_user_email_logic(email):
-  check_empty(email)
+def update_user_logic(data):
+  empty_request(data)
+  check_empty_field(data)
+  check_synatx(data,["user_name","user_email","password"])
+  user_name=data["user_name"]
+  check_type(user_name)
+  user_email=data["user_email"]
+  check_type(user_email)
+  check_email(user_email)
+  user_pass=data["password"]
+  check_type(user_pass)
+  check_pass(user_pass)
+  update_user(user_name,user_email,user_pass)
+  current_app.logger.info(f"The user of id {g.user_id} update his information .")
+  return success ("The information updated successfully .",200,)
+
+def update_user_buId_logic(id,data):
+  empty_request(data)
+  user=get_user(id)
+  if not user:
+    raise NotFoundError(f"The user of id {id} not found .")
+  check_empty_field(data)
+  check_synatx(data,["user_name","user_email","password"])
+  user_name=data["user_name"]
+  check_type(user_name)
+  user_email=data["user_email"]
+  check_type(user_email)
+  check_email(user_email)
+  user_pass=data["password"]
+  check_type(user_pass)
+  check_pass(user_pass)
+  update_user(user_name,user_email,user_pass)
+  current_app.logger.info(f"The admin of id {g.user_id} update the users information .")
+  return success ("The information updated successfully .",200,)
+
+def update_admin_logic(id):
+  user=get_user(id)
+  if not user:
+      raise NotFoundError(f"The user of id {id} not found .")
+  update_to_admin(id)
+  current_app.logger.info(f'The admin of id {g.user_id} update the ueser of id {id} to adim')
+  return success(f'The user of id {id} update to admi successfully.',200)
+
+def get_user_byEmail_logic(email):
+  check_empty_field(email)
   check_type(email)
   check_email(email)
-  result=get_user_by_email(email)
-  if not result:
-    raise NotFoundError("Email is not found.",404,[])
-  return success(f"User with email '{email}' retrieved successfully",{"data":result})
-
-def add_user_logic(user_data):
-  check_syntax(user_data)
-  name=user_data['user_name']
-  email=user_data['user_email']
-  passw=user_data['password']
-  check_empty(name,email,passw)
-  check_type(name,email,passw)
-  check_password(passw)
-  check_email(email)
-  check_user=get_user_by_email(email)
-  if check_user:
-    raise ValidationError("The email is already exists",payload=check_user)
-  hash_pass=hash_password(passw)
-  user_data['password']=hash_pass
-  user_id=add_uesr(user_data)
-  current_app.logger.info(f"The user with id{g.current_user_id} add the user with id {user_id} successfully to the sysetm . ")
-  new_user=get_user_by_id(user_id)
-  return success(f"The user crated successfully ",{"data":new_user},201)
-
-def update_user_logic_id(id,user_data):
-  check_user=get_user_by_id(id)
-  if not check_user:
-    raise NotFoundError(f"The id {id} is not found soory .",404,[])
-  check_syntax(user_data)
-  name=user_data['user_name']
-  email=user_data['user_email']
-  passw=user_data['password']
-  check_empty(name,email,passw)
-  check_type(name,email,passw)
-  check_password(passw)
-  check_email(email)
-  hash_pass=hash_password(passw)
-  user_data['password']=hash_pass
-  update_user_info(id,user_data)
-  current_app.logger.info(f'The user with id {g.current_user_id } update the user {id} successfully .')
-  upadated_user=get_user_by_id(id)
-  return success(f"The user with id {id} is uapdated successfully.",{"data":upadated_user},201)
-
-def update_user_logic(user_data):
-  check_syntax(user_data)
-  name=user_data['user_name']
-  email=user_data['user_email']
-  passw=user_data['password']
-  check_empty(name,email,passw)
-  check_type(name,email,passw)
-  check_password(passw)
-  check_email(email)
-  hash_pass=hash_password(passw)
-  user_data['password']=hash_pass
-  update_user_info(g.current_user_id,user_data)
-  current_app.logger.info(f'The user data with id {g.current_user_id } updated successfully .')
-  upadated_user=get_user_by_id(id)
-  return success(f"The user with id {id} is uapdated successfully.",{"data":upadated_user},201)
-
-
-def delete_user_logic(id):
-  check_user=get_user_by_id(id)
-  if not check_user:
-    raise NotFoundError(f"The user with id {id} not found.")
-  delete_user(id)
-  current_app.logger.info(f'The user with id{g.current_user_id } delet the user {id} deleted successfully .')
-  return success(f"The user wiht id {id} deleted successfully.",{"data":check_user},200)
-
-def update_to_admin_logic(id):
-  user=get_user_by_id(id)
+  user=get_user_by_email(email)
   if not user:
-    raise NotFoundError(f'The id {id} not found .')
-  if user[0]["role"]=="admin":
-    raise ValidationError(f"The user with id {id} is already admin .")
-  new_admin=update_to_admin(id)
-  current_app.logger.info(f'The user with id {id} upgrade to admin successfully .')
-  return success(f"The user with id {id} is admin now.")
+    raise NotFoundError("The email not found .")
+  return success(f"The user of email '{email} 'retrived successfully.",200,{"data":user})
+
+def get_user_byId_logic(id):
+  if not isinstance(id,int):
+    raise ValidationError("The id must be a integer number.")
+  user=get_user(id)
+  if not user:
+    raise NotFoundError(f"The user of id {id} not found in the system .")
+  return success(f"The user of id {id} retrived successfully.",200,{"data":user})
