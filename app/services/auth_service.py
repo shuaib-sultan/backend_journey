@@ -2,7 +2,7 @@ from app.core.errors import (
   AuthenticationError,
   ConflictError
   )
-from app.utiles.validatores import (
+from app.utils.validators import (
   check_email,
   check_empty_field,
   check_pass,
@@ -10,16 +10,16 @@ from app.utiles.validatores import (
   check_type,
   empty_request,
 )
-from app.utiles.jwt_utiles import ( 
+from app.utils.jwt_utiles import ( 
   generate_jwt,
   )
 from app.models.user_sql import (
   get_user_by_email,
   add_user,
 )
-from app.utiles.response import success
+from app.utils.response import success
 from flask import g,current_app
-from app.utiles.pass_hashing import hashing,vreify_password
+from app.utils.pass_hashing import hashing,vreify_password
 
 def login_logic(data):
   empty_request(data)

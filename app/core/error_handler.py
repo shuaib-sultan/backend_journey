@@ -1,6 +1,6 @@
 from flask import current_app ,request
 from app.core.errors import AppError
-from app.utiles.response import error
+from app.utils.response import error
 from werkzeug.exceptions import BadRequest
 # import traceback
 

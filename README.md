@@ -17,6 +17,7 @@ The main purpose of this repository is to represent my **backend development jou
 - v3.1 → Rate limiting
 - v3.2 → Query Optimization & Database Indexing
 - v3.3 → Project Refactoring & Structure Improvements
+- v4.0 → API Documentation
 ---
 
 ## 📌 Features (Current Version)
@@ -99,6 +100,13 @@ utils/hash.py
 - I refactored multiple parts of the project to improve readability and maintainability.
 - I reorganized the project structure to make the codebase cleaner and easier to scale.
 - I improved separation of concerns between layers.
+
+## ✔ API Documentation
+
+- I documented the API using Swagger and Flasgger.
+- I added interactive API documentation for testing endpoints directly from the browser.
+- The documentation includes authentication, request bodies, parameters, and response formats.
+
 ---
 
 ## 📁 Project Structure
@@ -115,6 +123,8 @@ project/
 |  ├── models/
 |  │ └── user_sql.py
 |  │
+|  ├── documentation/
+|  │ └── app_documentation.py
 |  ├── routes/
 |  │ └── auth_blueprint.py
 |  │ └── user_blueprint.py
@@ -225,6 +235,22 @@ To logout of the system and invoke the token .
 
 ---
 
+## 📘 API Documentation
+
+Swagger UI is available at:
+
+```bash
+http://127.0.0.1:5000/apidocs/
+```
+
+The OpenAPI specification file is located in:
+
+```bash
+documentation/app_documentation.yaml
+```
+
+---
+
 ## 📦 Future Versions
 
 ### This project will evolve into multiple advanced releases, including:
@@ -251,7 +277,7 @@ To logout of the system and invoke the token .
 
 - Project Refactoring & Structure Improvements --> done ✔
 
-- API Documentation
+- API Documentation --> done ✔
 
 - Docker containerization
 

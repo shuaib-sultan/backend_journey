@@ -3,7 +3,7 @@ from functools import wraps
 from app.core.errors import (
   AuthenticationError,
   PermissionError)
-from app.utiles.jwt_utiles import (
+from app.utils.jwt_utiles import (
   decode_token,
   extract_token)
 

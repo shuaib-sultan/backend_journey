@@ -3,6 +3,9 @@ def creat_app():
   load_dotenv()
   from flask import Flask
   app=Flask(__name__)
+  from flasgger import Swagger
+  open_api_template="documentation/app_documentation.yaml"
+  Swagger(app,template_file=open_api_template)
   from app.routes.users_blueprint import users_bp
   app.register_blueprint(users_bp)
   from app.routes.auth_bleuprint import auth_bp

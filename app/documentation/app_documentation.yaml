@@ -1,0 +1,404 @@
+swagger: '2.0'
+info:
+  title: 'Flask API Backend Journey'
+  version: '1.0.0'
+  description: |
+    A Flask-based User Management API that supports authentication, user registration, data updates, and role management.
+host: 'localhost:5000'
+basePath: '/'
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'Use Bearer {token} for authenticated requests.'
+security:
+  - Bearer: []
+paths:
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: 'Login user'
+      description: 'Login and receive a JWT token.'
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/LoginRequest'
+      responses:
+        200:
+          description: 'Successful login'
+          schema:
+            $ref: '#/definitions/AuthResponse'
+        401:
+          description: 'Invalid email or password'
+        422:
+          description: 'Validation error'
+  /sigup:
+    post:
+      tags:
+        - Authentication
+      summary: 'Sign up new user'
+      description: 'Create a new user and return a JWT token.'
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/SignupRequest'
+      responses:
+        200:
+          description: 'Successful signup'
+          schema:
+            $ref: '#/definitions/AuthResponse'
+        409:
+          description: 'Email already registered'
+        422:
+          description: 'Validation error'
+  /logout:
+    post:
+      tags:
+        - Authentication
+      summary: 'Logout current user'
+      description: 'Invalidate the current Bearer token.'
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: 'Successful logout'
+          schema:
+            $ref: '#/definitions/MessageResponse'
+        401:
+          description: 'Missing or invalid token'
+  /users/users:
+    get:
+      tags:
+        - Users
+      summary: 'Retrieve user list'
+      description: 'Get paginated users with optional role filter.'
+      security:
+        - Bearer: []
+      parameters:
+        - in: query
+          name: page
+          type: integer
+          required: false
+          default: 1
+          description: 'Page number'
+        - in: query
+          name: limit
+          type: integer
+          required: false
+          default: 10
+          description: 'Number of users per page'
+        - in: query
+          name: role
+          type: string
+          required: false
+          description: 'Filter users by role'
+      responses:
+        200:
+          description: 'Users retrieved successfully'
+          schema:
+            $ref: '#/definitions/UserListResponse'
+        401:
+          description: 'Unauthorized'
+  /users/addUser:
+    post:
+      tags:
+        - Users
+      summary: 'Add a new user'
+      description: 'Create a new user account. Admin only.'
+      security:
+        - Bearer: []
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/SignupRequest'
+      responses:
+        201:
+          description: 'User created successfully'
+          schema:
+            $ref: '#/definitions/NewUserResponse'
+        403:
+          description: 'Admin privileges required'
+        409:
+          description: 'User already exists'
+  /users/update:
+    put:
+      tags:
+        - Users
+      summary: 'Update current user'
+      description: "Update the authenticated user's information."
+      security:
+        - Bearer: []
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/SignupRequest'
+      responses:
+        200:
+          description: 'User updated successfully'
+          schema:
+            $ref: '#/definitions/MessageResponse'
+        401:
+          description: 'Unauthorized'
+  /users/updateUser/{id}:
+    put:
+      tags:
+        - Users
+      summary: 'Update a user by id'
+      description: 'Update user data by user id. Admin only.'
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+          description: 'User ID'
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/SignupRequest'
+      responses:
+        200:
+          description: 'User updated successfully'
+          schema:
+            $ref: '#/definitions/MessageResponse'
+        403:
+          description: 'Admin privileges required'
+        404:
+          description: 'User not found'
+  /users/deleteUser/{id}:
+    delete:
+      tags:
+        - Users
+      summary: 'Delete a user'
+      description: 'Delete a user by id. Admin only.'
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+          description: 'User ID'
+      responses:
+        200:
+          description: 'User deleted successfully'
+          schema:
+            $ref: '#/definitions/MessageResponse'
+        403:
+          description: 'Admin privileges required'
+        404:
+          description: 'User not found'
+  /users/userById/{id}:
+    get:
+      tags:
+        - Users
+      summary: 'Get user by id'
+      description: 'Retrieve a user by their id.'
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+          description: 'User ID'
+      responses:
+        200:
+          description: 'User retrieved successfully'
+          schema:
+            $ref: '#/definitions/UserResponse'
+        404:
+          description: 'User not found'
+  /users/userByEmail/{email}:
+    get:
+      tags:
+        - Users
+      summary: 'Get user by email'
+      description: 'Retrieve a user by their email address.'
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: email
+          required: true
+          type: string
+          description: 'User email'
+      responses:
+        200:
+          description: 'User retrieved successfully'
+          schema:
+            $ref: '#/definitions/UserResponse'
+        404:
+          description: 'Email not found'
+  /users/addAdmin/{id}:
+    put:
+      tags:
+        - Users
+      summary: 'Promote user to admin'
+      description: 'Grant admin role to the specified user. Admin only.'
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+          description: 'User ID'
+      responses:
+        200:
+          description: 'User promoted successfully'
+          schema:
+            $ref: '#/definitions/MessageResponse'
+        403:
+          description: 'Admin privileges required'
+        404:
+          description: 'User not found'
+definitions:
+  LoginRequest:
+    type: object
+    required:
+      - user_name
+      - user_email
+      - password
+    properties:
+      user_name:
+        type: string
+        example: 'ahmed'
+      user_email:
+        type: string
+        format: email
+        example: 'ahmed@example.com'
+      password:
+        type: string
+        format: password
+        example: 'strongpassword123'
+  SignupRequest:
+    type: object
+    required:
+      - user_name
+      - user_email
+      - password
+    properties:
+      user_name:
+        type: string
+        example: 'ahmed'
+      user_email:
+        type: string
+        format: email
+        example: 'ahmed@example.com'
+      password:
+        type: string
+        format: password
+        example: 'strongpassword123'
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+      user_name:
+        type: string
+      user_email:
+        type: string
+        format: email
+      role_id:
+        type: integer
+  AuthResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        example: 'Success'
+      success_message:
+        type: string
+      details:
+        type: object
+        properties:
+          new_token:
+            type: string
+  MessageResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        example: 'Success'
+      success_message:
+        type: string
+      details:
+        type: array
+        items:
+          type: object
+  NewUserResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        example: 'Success'
+      success_message:
+        type: string
+      details:
+        type: object
+        properties:
+          new_user_id:
+            type: integer
+  UserResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        example: 'Success'
+      success_message:
+        type: string
+      details:
+        type: object
+        properties:
+          data:
+            $ref: '#/definitions/User'
+  UserListResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        example: 'Success'
+      success_message:
+        type: string
+      details:
+        type: object
+        properties:
+          page:
+            type: integer
+          limit:
+            type: integer
+          total_pages:
+            type: integer
+          total_users:
+            type: integer
+          data:
+            type: array
+            items:
+              $ref: '#/definitions/User'
